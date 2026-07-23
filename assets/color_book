@@ -1,0 +1,69 @@
+:root {
+    /* --- Light Theme --- */
+    /* Primary (Deep Blue) */
+    --clr-primary: #375DA4;
+    --clr-on-primary: #FFFFFF;
+    --clr-primary-container: #B7D7F2;
+    --clr-on-primary-container: #11203B;
+
+    /* Secondary (Teal/Slate) */
+    --clr-secondary: #609EA9;
+    --clr-on-secondary: #FFFFFF;
+    --clr-secondary-container: #D9F2EC;
+    --clr-on-secondary-container: #1A3439;
+
+    /* Tertiary (Accent Yellow) */
+    --clr-tertiary: #F7D25D;
+    --clr-on-tertiary: #2D2200;
+    --clr-tertiary-container: #EDD9D0; /* Using the soft peach/beige for a warm container background */
+    --clr-on-tertiary-container: #33221A;
+
+    /* System / Feedback */
+    --clr-error: #B3261E;
+    --clr-on-error: #FFFFFF;
+    --clr-error-container: #F9DEDC;
+    --clr-on-error-container: #410E0B;
+
+    /* Backgrounds & Surfaces */
+    --clr-background: #FAFAFA;
+    --clr-on-background: #1C1B1F;
+    --clr-surface: #FAFAFA;
+    --clr-on-surface: #1C1B1F;
+    --clr-surface-variant: #E7E0EC;
+    --clr-on-surface-variant: #49454F;
+    --clr-outline: #79747E;
+
+    /* --- Dark Theme --- */
+    /* Primary */
+    --clr-primary-dark: #A4C2F4;
+    --clr-on-primary-dark: #002D66;
+    --clr-primary-container-dark: #1E458A;
+    --clr-on-primary-container-dark: #B7D7F2;
+
+    /* Secondary */
+    --clr-secondary-dark: #97D4E0;
+    --clr-on-secondary-dark: #00363E;
+    --clr-secondary-container-dark: #46848F;
+    --clr-on-secondary-container-dark: #D9F2EC;
+
+    /* Tertiary */
+    --clr-tertiary-dark: #F7D25D;
+    --clr-on-tertiary-dark: #413100;
+    --clr-tertiary-container-dark: #614B00;
+    --clr-on-tertiary-container-dark: #FFE28A;
+
+    /* System / Feedback Dark */
+    --clr-error-dark: #F2B8B5;
+    --clr-on-error-dark: #601410;
+    --clr-error-container-dark: #8C1D18;
+    --clr-on-error-container-dark: #F9DEDC;
+
+    /* Backgrounds & Surfaces Dark */
+    --clr-background-dark: #141316;
+    --clr-on-background-dark: #E6E1E5;
+    --clr-surface-dark: #141316;
+    --clr-on-surface-dark: #E6E1E5;
+    --clr-surface-variant-dark: #49454F;
+    --clr-on-surface-variant-dark: #CAC4D0;
+    --clr-outline-dark: #938F99;
+}
