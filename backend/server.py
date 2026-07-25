@@ -99,8 +99,7 @@ def get_confusion_data():
         "students": student_data
     }
 
-# API_KEY = os.environ.get("DEEPSEEK_API_KEY") 
-API_KEY = "sk-d0007ec01ed74cd18a4eddbf8aed7e69"
+API_KEY = os.environ.get("DEEPSEEK_API_KEY") 
 URL = "https://api.deepseek.com/chat/completions"
 LEVEL = "secondary school"
 
