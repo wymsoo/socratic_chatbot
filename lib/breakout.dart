@@ -1,149 +1,27 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 const String sampleLectureSnippet = """
-Most production agents build on the context window with one or more storage patterns.
+The primary goal of statistical thermodynamics (also known as equilibrium statistical mechanics) is to derive the classical thermodynamics of materials in terms of the properties of their constituent particles and the interactions between them. In other words, statistical thermodynamics provides a connection between the macroscopic properties of materials in thermodynamic equilibrium, and the microscopic behaviours and motions occurring inside the material.
 
-1. Raw transcript storage
-The simplest pattern is storing complete conversation logs in a database or logging system. To reuse them:
+Whereas statistical mechanics proper involves dynamics, here the attention is focused on statistical equilibrium (steady state). Statistical equilibrium does not mean that the particles have stopped moving (mechanical equilibrium), rather, only that the ensemble is not evolving.
 
-Retrieve a user’s past messages by ID
+Fundamental postulate
+A sufficient (but not necessary) condition for statistical equilibrium with an isolated system is that the probability distribution is a function only of conserved properties (total energy, total particle numbers, etc.). There are many different equilibrium ensembles that can be considered, and only some of them correspond to thermodynamics. Additional postulates are necessary to motivate why the ensemble for a given system should have one form or another.
 
-Optionally summarise them
+A common approach found in many textbooks is to take the equal a priori probability postulate. This postulate states that
 
-Add them to the context for the next query
+For an isolated system with an exactly known energy and exactly known composition, the system can be found with equal probability in any microstate consistent with that knowledge.
+The equal a priori probability postulate therefore provides a motivation for the microcanonical ensemble described below. There are various arguments in favour of the equal a priori probability postulate:
 
-This approach is:
-
-Easy to implement
-
-Good for compliance and debugging
-
-Weak for retrieval and personalization
-
-Limitations:
-
-Retrieval is usually basic (time-based, not semantic)
-
-Summarisation is lossy and non-incremental
-
-No structure for user profile vs transient context
-
-2. Vector store-based semantic memory
-Another common pattern uses embeddings and a vector database:
-
-Generate embeddings for user or message chunks
-
-Store embeddings with metadata
-
-At query time, embed the new message and run KNN similarity search
-
-Inject top results back into the prompt
-
-This improves relevance for long-tail queries and cross-session recall. Yet it still behaves largely as a retrieval layer, not a true memory system:
-
-It rarely distinguishes between stable facts and transient chatter
-
-Facts are not updated, only added
-
-Memory management (deduplication, decay, merging) is manual
-
-3. Application database as "memory."
-Many teams store user state in first-class tables:
-
-users: profile fields and preferences
-
-settings: notification, language, access control
-
-tasks or projects: ongoing workflows and status
-
-This gives durability and structure, but requires:
-
-Custom schema design for every new agent feature
-
-Glue code to keep the chatbot and database in sync
-
-Manual reasoning about what belongs in SQL vs in prompts
-
-The core trade-off appears:
-
-While structured data is reliable and cheap, it is expensive to maintain and evolve.
-
-While prompt-based context is flexible, it is ephemeral and costly.
-
-Most systems end up combining all three patterns, but with ad hoc logic scattered across services.
-
-The core memory problems in production agents
-Illustrates the lifecycle of a memory from extraction to retrieval and update, clarifying how Mem0 differs from simple append only vector storage.
-For AI engineers, the hard part is not storing data. The problems are around meaning and usage of memory.
-
-1. What should be remembered
-Not every user utterance deserves long-term storage. A good memory system must decide:
-
-Is this a stable preference?
-
-Is this a one-off constraint?
-
-Is this only relevant to the current turn?
-
-If everything is stored, retrieval becomes noisy and expensive. If too little is stored, personalization vanishes.
-
-2. How memory evolves
-Facts change over time. A user might say:
-
-“I am a frontend engineer at Acme Corp.”
-
-Then six months later:
-
-“I just moved to backend engineering at Acme Corp.”
-
-A naive vector store will keep both lines. At retrieval time, the model sees conflicting information. Real memory must handle:
-
-Updates and overrides
-
-Time-aware relevance
-
-Merging and deduplication
-
-3. How agents use memory consistently
-When multiple agents or tools interact with the same user, they must see a coherent view of memory:
-
-Chatbot agent
-
-Scheduling agent
-
-Knowledge search agent
-
-Without a shared memory layer, each component builds its own partial "memory," leading to fragmentation and inconsistent behavior.
-
-4. Operational constraints
-Production systems also need:
-
-Low latency and predictable cost
-
-Observability into what was stored and retrieved
-
-Access control and per-tenant separation
-
-Migration paths when models and embeddings change
-
-A memory solution must fit into the engineering stack, not just into the prompt.
-
-Mem0 as a dedicated memory layer
-Mem0 provides a memory layer designed specifically for LLMs and agents, with a few key design principles:
-
-Memory as a first-class object: Mem0 treats memories as typed, queryable objects linked to identities and scopes, not just raw text chunks.
-
-Automatic extraction from conversations: It uses LLMs and heuristics to extract meaningful facts, preferences, and events from chat logs, instead of storing every token.
-
-Semantic and structured retrieval: Memories can be retrieved by semantic similarity, metadata filters, or both. The system can return concise, relevant snippets, not entire logs.
-
-Cross-session and cross-agent sharing: Multiple agents can read and write to the same memory space, so a user’s preferences or history are visible across workflows.
-
-Pluggable persistence: Mem0 can run as a managed API or self-hosted service. It integrates with common databases and vector stores while providing a stable API surface.
-
-In production terms, Mem0 sits between the agent orchestration layer and storage, handling memory extraction, storage, and retrieval so application code stays focused on business logic.
+Ergodic hypothesis: An ergodic system is one that evolves over time to explore "all accessible" states: all those with the same energy and composition. In an ergodic system, the microcanonical ensemble is the only possible equilibrium ensemble with fixed energy. This approach has limited applicability, since most systems are not ergodic.
+Principle of indifference: In the absence of any further information, we can only assign equal probabilities to each compatible situation.
+Maximum information entropy: A more elaborate version of the principle of indifference states that the correct ensemble is the ensemble that is compatible with the known information and that has the largest Gibbs entropy (information entropy).
+Other fundamental postulates for statistical mechanics have also been proposed.
 """;
 
 void main() {
@@ -165,17 +43,21 @@ class SocraticTutorApp extends StatelessWidget {
       home: const ChatPage(),
     );
   }
-} // <--- Fixed missing closing brace for SocraticTutorApp
+}
 
 class ChatMessage {
   final String text;
   final bool isUser;
   final String senderName;
+  final List<String>? choices;
+  final bool allowCustomResponse;
 
   ChatMessage({
     required this.text,
     required this.isUser,
     required this.senderName,
+    this.choices,
+    this.allowCustomResponse = false,
   });
 }
 
@@ -189,6 +71,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _inputFocusNode = FocusNode();
   final List<ChatMessage> _messages = [];
 
   bool _isLoading = false;
@@ -202,6 +85,14 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _initializeSession();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    _inputFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeSession() async {
@@ -292,12 +183,39 @@ class _ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        // Parse tutor_response and choices
+        final responseObj = data['tutor_response'];
+        final overviewText = data['overview'];
+        final String tutorText = (responseObj is Map)
+            ? (responseObj['question'] ?? responseObj['text'] ?? '')
+            : responseObj.toString();
+
+        final dynamic mcqData = (responseObj is Map) ? responseObj['choices'] : null;
+        List<String>? parsedChoices;
+        if (mcqData is List) {
+          parsedChoices = mcqData.map((choice) => choice.toString()).toList();
+        } else if (mcqData is Map && mcqData['choices'] is List) {
+          parsedChoices = (mcqData['choices'] as List)
+              .map((choice) => choice.toString())
+              .toList();
+        }
+
         setState(() {
           _messages.add(
+          ChatMessage(
+            text: overviewText,
+            isUser: false,
+            senderName: "🤖 Tutor",
+          ),
+          );
+          _messages.add(
             ChatMessage(
-              text: data['tutor_response'],
+              text: tutorText.isNotEmpty ? tutorText : responseObj.toString(),
               isUser: false,
               senderName: "🤖 Tutor",
+              choices: parsedChoices, // Pass parsed choices here
+              allowCustomResponse: false,
             ),
           );
           _sessionStatus = data['status'] ?? "tutoring";
@@ -313,8 +231,7 @@ class _ChatPageState extends State<ChatPage> {
       _scrollToBottom();
     }
   }
-
-  Future<void> _handleSubmitted(String text) async {
+  Future<void> _sendChatMessage(String text) async {
     if (text.trim().isEmpty || _sessionId == null) return;
     _controller.clear();
 
@@ -333,19 +250,38 @@ class _ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        final responseObj = data['tutor_response'];
+        final String tutorText = (responseObj is Map) 
+            ? (responseObj['question'] ?? responseObj['text'] ?? '')
+            : responseObj.toString();
+
+        final dynamic mcqData = (responseObj is Map) ? responseObj['choices'] : null;
+        List<String>? parsedChoices;
+        if (mcqData is List) {
+          parsedChoices = mcqData.map((choice) => choice.toString()).toList();
+        } else if (mcqData is Map && mcqData['choices'] is List) {
+          parsedChoices = (mcqData['choices'] as List)
+              .map((choice) => choice.toString())
+              .toList();
+        }
+
         setState(() {
           _messages.add(
             ChatMessage(
-              text: data['tutor_response'],
+              text: tutorText.isNotEmpty ? tutorText : "Here is the next step:",
               isUser: false,
               senderName: "🤖 Tutor",
+              choices: parsedChoices,
+              allowCustomResponse: false,
             ),
           );
           _sessionStatus = data['status'] ?? "tutoring";
         });
 
+        // 1. FIXED: Show dialog, and let the dialog handling call start test directly
         if (data['test_prompt'] == true) {
-          await _showTestConfirmation(
+          _showTestConfirmation(
             data['test_instructions'] ?? "Ready to start the 3-question test?",
           );
         }
@@ -358,6 +294,14 @@ class _ChatPageState extends State<ChatPage> {
       setState(() => _isLoading = false);
       _scrollToBottom();
     }
+  }
+
+  Future<void> _handleSubmitted(String text) async {
+    await _sendChatMessage(text);
+  }
+
+  Future<void> _submitChatChoice(String answer) async {
+    await _sendChatMessage(answer);
   }
 
   Future<void> _showTestConfirmation(String instructions) async {
@@ -459,16 +403,22 @@ class _ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final rawQuestion = data['raw_question'];
-        String firstQuestionText = data['tutor_response'] ?? 'Question';
+        
+        final rawQuestion = data['tutor_response'];
+        String firstQuestionText = data['raw_question'] ?? '';
         List<String>? choices;
 
         if (rawQuestion is Map) {
-          firstQuestionText =
-              rawQuestion['question']?.toString() ?? firstQuestionText;
+          firstQuestionText = rawQuestion['question']?.toString() ?? firstQuestionText;
           final rawChoices = rawQuestion['choices'];
+          
           if (rawChoices is List) {
-            choices = rawChoices.map((choice) => choice.toString()).toList();
+            choices = rawChoices.map((choice) {
+              if (choice is Map && choice.containsKey('text')) {
+                return choice['text'].toString();
+              }
+              return choice.toString();
+            }).toList();
           }
         }
 
@@ -505,27 +455,53 @@ class _ChatPageState extends State<ChatPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
+        final feedback = data['tutor_response'] ?? 'Feedback';
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              text: feedback,
+              isUser: false,
+              senderName: '🤖 Tutor',
+            ),
+          );
+        });
+
         if (data.containsKey('next_question')) {
-          final nextQ = data['next_question'];
+          final nextQObj = data['next_question'];
+          String nextQText = "";
+          List<String>? options;
+
+          if (nextQObj is Map) {
+            nextQText = nextQObj['question']?.toString() ?? '';
+            final rawChoices = nextQObj['choices'];
+            if (rawChoices is List) {
+              options = rawChoices.map((choice) {
+                if (choice is Map && choice.containsKey('text')) {
+                  return choice['text'].toString();
+                }
+                return choice.toString();
+              }).toList();
+            }
+          } else {
+            nextQText = nextQObj.toString();
+          }
+
           final idx = data['question_index'] ?? 1;
           final tot = data['total_questions'] ?? 3;
-          setState(() {
-            _messages.add(
-              ChatMessage(
-                text: data['tutor_response'] ?? 'Feedback',
-                isUser: false,
-                senderName: '🤖 Tutor',
-              ),
-            );
-          });
-          await _showTestQuestionDialog(nextQ, idx, tot);
+
+          await _showTestQuestionDialog(nextQText, idx, tot, options: options);
         } else {
+          
+          // Test complete modal logic
           final summary = data['final_summary'] ?? 'Good job!';
           final competency = data['competency_notes'] ?? '';
-          final stash = data['stash_stars'] ?? 2;
+          final reportContent = data['report_content'] ?? 'No report details found.';
+          final stash = data['stash_stars'] ?? 0;
 
+          if (!mounted) return;
+          final dialogContext = context;
           await showDialog<void>(
-            context: context,
+            context: dialogContext,
             builder: (context) {
               return Dialog(
                 shape: RoundedRectangleBorder(
@@ -538,6 +514,28 @@ class _ChatPageState extends State<ChatPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
+                        'Session Complete',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Color(0xFF1B365D),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (i) {
+                          return Icon(
+                            Icons.star,
+                            size: 40,
+                            color: i < stash
+                                ? const Color(0xFFFFCC33)
+                                : Colors.grey.shade400,
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
                         'What you covered:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -547,37 +545,39 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       const SizedBox(height: 6),
                       Text(summary, style: const TextStyle(fontSize: 13)),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'What to Improve:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Color(0xFF1B365D),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(competency, style: const TextStyle(fontSize: 13)),
                       const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          return Icon(
-                            Icons.star,
-                            size: 36,
-                            color: i < stash
-                                ? const Color(0xFFFFCC33)
-                                : Colors.grey.shade400,
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 16),
+                      
+                      // View Report Button
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: ElevatedButton(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFCC33),
+                            backgroundColor: const Color(0xFF1B365D),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24.0),
+                            ),
+                          ),
+                          onPressed: () => _downloadReportPdf(reportContent),
+                          label: const Text(
+                            'View Report',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Complete / Dismiss Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
                             foregroundColor: const Color(0xFF1B365D),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24.0),
@@ -585,7 +585,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                           onPressed: () => Navigator.of(context).pop(),
                           child: const Text(
-                            'Complete',
+                            'Close',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -610,6 +610,54 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Helper function to generate and download the PDF report
+  Future<void> _downloadReportPdf(String reportContent) async {
+    final pdf = pw.Document();
+
+    // Split the massive text string into smaller chunks (paragraphs/lines)
+    final List<String> textBlocks = reportContent.split('\n');
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32), // Add some nice margins
+        build: (pw.Context context) {
+          return [
+            pw.Header(
+              level: 0,
+              child: pw.Text(
+                'Session Study Report',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue900,
+                ),
+              ),
+            ),
+            pw.SizedBox(height: 16),
+            
+            // Map each paragraph to its own Text widget so it paginates perfectly
+            ...textBlocks.map(
+              (block) => pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 6.0),
+                child: pw.Text(
+                  block,
+                  style: const pw.TextStyle(fontSize: 12, lineSpacing: 1.5),
+                ),
+              ),
+            ),
+          ];
+        },
+      ),
+    );
+
+    // Layout the PDF (handles preview and download on both mobile and web)
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'Socratic_Tutor_Report.pdf',
+    );
+  }
+  // 3. FIXED: Strictly Multiple Choice Only
   Future<void> _showTestQuestionDialog(
     String question,
     int index,
@@ -617,19 +665,27 @@ class _ChatPageState extends State<ChatPage> {
     List<String>? options,
   }) async {
     String? selectedChoice;
-    final TextEditingController answerController = TextEditingController();
+    final List<String> effectiveOptions = (options != null && options.isNotEmpty)
+        ? options
+        : ["Option A", "Option B", "Option C", "Option D"];
 
+    final dialogContext = context;
     await showDialog<bool>(
-      context: context,
+      context: dialogContext,
       barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
+            final bool canSubmit = selectedChoice != null;
+
             return AlertDialog(
               backgroundColor: const Color(0xFFFFF2C2),
               title: Text(
                 'Question $index of $total',
-                style: const TextStyle(color: Color(0xFF1B365D)),
+                style: const TextStyle(
+                  color: Color(0xFF1B365D),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -644,88 +700,70 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     const SizedBox(height: 16.0),
-                    if (options != null && options.isNotEmpty)
-                      ...options.map((option) {
-                        final isSelected = selectedChoice == option;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: InkWell(
-                            onTap: () =>
-                                setState(() => selectedChoice = option),
-                            borderRadius: BorderRadius.circular(12.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFF1B365D)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
-                                vertical: 12.0,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    isSelected
-                                        ? Icons.radio_button_checked
-                                        : Icons.radio_button_off,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.grey,
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                  Expanded(
-                                    child: Text(
-                                      option,
-                                      style: TextStyle(
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.black87,
-                                      ),
+                    ...effectiveOptions.map((option) {
+                      final isSelected = selectedChoice == option;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: InkWell(
+                          onTap: () => setState(() {
+                            selectedChoice = option;
+                          }),
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF1B365D)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 12.0,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isSelected
+                                      ? Icons.radio_button_checked
+                                      : Icons.radio_button_off,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey,
+                                ),
+                                const SizedBox(width: 10.0),
+                                Expanded(
+                                  child: Text(
+                                    option,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.black87,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      })
-                    else
-                      TextField(
-                        controller: answerController,
-                        decoration: const InputDecoration(
-                          hintText: 'Type your answer here',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(),
                         ),
-                      ),
+                      );
+                    }),
                   ],
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFCC33),
+                    disabledBackgroundColor: Colors.grey.shade300,
                   ),
-                  onPressed: () {
-                    if (options != null && options.isNotEmpty) {
-                      if (selectedChoice != null) {
-                        Navigator.of(context).pop(true);
-                        _submitTestAnswer(selectedChoice!);
-                      }
-                    } else {
-                      Navigator.of(context).pop(true);
-                      _submitTestAnswer(answerController.text.trim());
-                    }
-                  },
+                  onPressed: canSubmit
+                      ? () {
+                          Navigator.of(context).pop(true);
+                          _submitTestAnswer(selectedChoice!);
+                        }
+                      : null,
                   child: const Text(
-                    'Submit',
+                    'Submit Answer',
                     style: TextStyle(color: Color(0xFF1B365D)),
                   ),
                 ),
@@ -816,45 +854,100 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildChatBubble(ChatMessage message) {
+    final bool hasChoices =
+        !message.isUser && message.choices != null && message.choices!.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: message.isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: message.isUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
-          if (!message.isUser) ...[
-            _buildAvatar(false),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(14.0),
-              decoration: BoxDecoration(
-                color: message.isUser
-                    ? const Color(0xFF4A6FA5)
-                    : const Color(0xFFC7DCF9),
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(message.isUser ? 18 : 4),
-                  bottomRight: Radius.circular(message.isUser ? 4 : 18),
+          Row(
+            mainAxisAlignment: message.isUser
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!message.isUser) ...[
+                _buildAvatar(false),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.all(14.0),
+                  decoration: BoxDecoration(
+                    color: message.isUser
+                        ? const Color(0xFF4A6FA5)
+                        : const Color(0xFFC7DCF9),
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: Radius.circular(message.isUser ? 18 : 4),
+                      bottomRight: Radius.circular(message.isUser ? 4 : 18),
+                    ),
+                  ),
+                  child: Text(
+                    message.text,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      height: 1.35,
+                      color: message.isUser
+                          ? Colors.white
+                          : const Color(0xFF1B365D),
+                    ),
+                  ),
                 ),
               ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.35,
-                  color: message.isUser
-                      ? Colors.white
-                      : const Color(0xFF1B365D),
-                ),
+              if (message.isUser) ...[
+                const SizedBox(width: 8),
+                _buildAvatar(true)
+              ],
+            ],
+          ),
+
+          if (hasChoices)
+            Padding(
+              padding: const EdgeInsets.only(left: 46.0, top: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...message.choices!.map((choice) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(129, 29, 70, 142),
+                            foregroundColor: const Color.fromARGB(255, 195, 220, 255),
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: _isLoading
+                              ? null
+                              : () => _submitChatChoice(choice),
+                          child: Text(
+                            choice,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
               ),
             ),
-          ),
-          if (message.isUser) ...[const SizedBox(width: 8), _buildAvatar(true)],
         ],
       ),
     );
@@ -865,7 +958,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1B365D), // Dark blue themed background
+          color: Color(0xFF1B365D),
           image: DecorationImage(
             image: AssetImage('assets/background.png'),
             fit: BoxFit.cover,
@@ -874,7 +967,7 @@ class _ChatPageState extends State<ChatPage> {
         child: SafeArea(
           child: Column(
             children: [
-              // Top Bar Header with Title and Exit Button
+              // Header
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
@@ -1040,36 +1133,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
 
-              // Test Understanding Yellow Action Bar
-              if (_sessionStatus == 'tutoring')
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 6.0,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFCC33),
-                        foregroundColor: const Color(0xFF1B365D),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22.0),
-                        ),
-                        elevation: 0,
-                      ),
-                      onPressed: _isLoading ? null : _handleStartTest,
-                      child: const Text(
-                        'Test Understanding',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              // 2. REMOVED: The "Test Understanding" button bar was here and has been removed.
 
               // Text Input Dock Bar
               Container(
@@ -1087,6 +1151,7 @@ class _ChatPageState extends State<ChatPage> {
                     Expanded(
                       child: TextField(
                         controller: _controller,
+                        focusNode: _inputFocusNode,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
