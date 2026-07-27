@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'breakout.dart';
+import 'data.dart';
+import 'profile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -138,7 +140,14 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AnalyticsApp(),
+                        ),
+                      );
+                    },
                     borderRadius: BorderRadius.circular(24),
                     child: Container(
                       height: 84,
@@ -168,6 +177,52 @@ class HomePage extends StatelessWidget {
                           ),
                           Icon(
                             Icons.dashboard_customize,
+                            size: 32,
+                            color: Color(0xFF8B5E87),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(24),
+                    child: Container(
+                      height: 84,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7E8E1),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromRGBO(0, 0, 0, 0.12),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: const [
+                          Expanded(
+                            child: Text(
+                              'Profile',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.person_outline,
                             size: 32,
                             color: Color(0xFF8B5E87),
                           ),

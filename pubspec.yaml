@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  csv: ^5.1.1
   pdf: ^3.11.1
   printing: ^5.12.0
   # The following adds the Cupertino Icons font to your application.
@@ -68,6 +69,8 @@ flutter:
     - assets/ghosty_robot.PNG
     - assets/ghosty_icon.PNG
     - assets/user.png
+    - assets/data.csv
+    - assets/avatar.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

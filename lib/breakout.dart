@@ -977,7 +977,7 @@ class _ChatPageState extends State<ChatPage> {
                   alignment: Alignment.center,
                   children: [
                     const Text(
-                      'Change in Atomic States',
+                      'Statistical Mechanics',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,

@@ -12,6 +12,8 @@ import os
 from dotenv import load_dotenv
 from memory_ui import MemoryUI
 
+load_dotenv()
+
 # Additional built-in imports for data processing
 import csv
 from collections import Counter
@@ -34,6 +36,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+JSON_FILE_PATH = os.path.join(os.path.dirname(__file__), 'quiz_questions.json')
+
+@app.get("/api/quiz")
+def get_quiz():
+    """Endpoint to fetch the 10 quiz questions."""
+    try:
+        with open(JSON_FILE_PATH, 'r', encoding='utf-8') as f:
+            questions = json.load(f)
+        return questions
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/quiz/submit")
+def submit_quiz(answers: dict):
+    """Endpoint to submit student answers."""
+    print("Received quiz responses:", answers)
+    return {"status": "success", "message": "Quiz submitted successfully!"}
 
 # --- Pydantic Models for Output Validation (UNCHANGED FOR FRONTEND SAFETY) ---
 class TimeSeriesPoint(BaseModel):
