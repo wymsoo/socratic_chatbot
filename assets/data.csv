@@ -1,0 +1,81 @@
+timestamp,student_id,keyword1,keyword2,keyword3,state
+1734400015000,S003,Electric Field,Gauss Law,Divergence,confused
+1734400042000,S001,Electric Field,Flux,Surface,confused
+1734400115000,S007,Gauss Law,Symmetry,Integration,confused
+1734400185000,S004,Divergence,Vector,Volume,confused
+1734400240000,S002,Electric Field,Coulomb Force,Charge,confused
+1734400305000,S008,Voltage,Potential,Gradient,confused
+1734400375000,S003,Potential,Integration,Electric Field,confused
+1734400450000,S005,Gauss Law,Flux,Symmetry,confused
+1734400512000,S006,Charge,Electric Field,Vector,confused
+1734400588000,S001,Divergence,Gauss Law,Volume,confused
+1734400650000,S007,Electric Field,Gauss Law,Flux,confused
+1734400715000,S004,Symmetry,Surface,Integration,gotit
+1734400780000,S002,Magnetic Field,Ampere Law,Curl,gotit
+1734400845000,S008,Magnetic Field,Vector,Current,confused
+1734400910000,S005,Ampere Law,Integration,Symmetry,confused
+1734400975000,S003,Curl,Vector,Magnetic Field,gotit
+1734401040000,S001,Electric Field,Gauss Law,Charge,confused
+1734401105000,S006,Voltage,Electric Field,Potential,gotit
+1734401170000,S004,Magnetic Field,Ampere Law,Curl,confused
+1734401235000,S002,Divergence,Vector,Gauss Law,gotit
+1734401300000,S007,Flux,Surface,Integration,gotit
+1734401365000,S008,Electric Field,Potential,Gradient,gotit
+1734401430000,S005,Magnetic Field,Current,Vector,confused
+1734401495000,S001,Charge,Coulomb Force,Electric Field,confused
+1734401560000,S003,Gauss Law,Divergence,Volume,gotit
+1734401625000,S006,Ampere Law,Curl,Magnetic Field,gotit
+1734401690000,S004,Voltage,Gradient,Potential,confused
+1734401755000,S002,Flux,Gauss Law,Surface,gotit
+1734401820000,S007,Integration,Vector,Symmetry,confused
+1734401885000,S005,Magnetic Field,Ampere Law,Current,gotit
+1734401950000,S008,Electric Field,Charge,Coulomb Force,gotit
+1734402015000,S001,Divergence,Volume,Gauss Law,confused
+1734402080000,S003,Potential,Voltage,Electric Field,confused
+1734402145000,S006,Curl,Vector,Ampere Law,confused
+1734402210000,S004,Gauss Law,Flux,Symmetry,confused
+1734402275000,S002,Magnetic Field,Curl,Vector,confused
+1734402340000,S007,Charge,Electric Field,Coulomb Force,confused
+1734402405000,S005,Ampere Law,Magnetic Field,Integration,confused
+1734402470000,S001,Gradient,Potential,Voltage,confused
+1734402535000,S008,Divergence,Gauss Law,Vector,confused
+1734402600000,S003,Surface,Flux,Integration,confused
+1734402665000,S006,Electric Field,Gauss Law,Divergence,gotit
+1734402730000,S004,Magnetic Field,Current,Curl,gotit
+1734402795000,S002,Voltage,Electric Field,Potential,confused
+1734402860000,S007,Gauss Law,Volume,Divergence,confused
+1734402925000,S005,Ampere Law,Symmetry,Integration,confused
+1734402990000,S001,Charge,Coulomb Force,Vector,gotit
+1734403055000,S008,Flux,Electric Field,Gauss Law,gotit
+1734403120000,S003,Magnetic Field,Ampere Law,Curl,gotit
+1734403185000,S006,Potential,Gradient,Voltage,confused
+1734403250000,S004,Electric Field,Divergence,Gauss Law,gotit
+1734403315000,S002,Vector,Integration,Symmetry,gotit
+1734403380000,S007,Curl,Magnetic Field,Ampere Law,gotit
+1734403445000,S005,Charge,Electric Field,Coulomb Force,confused
+1734403510000,S001,Volume,Divergence,Gauss Law,confused
+1734403575000,S008,Surface,Flux,Electric Field,confused
+1734403640000,S003,Potential,Voltage,Gradient,gotit
+1734403705000,S006,Magnetic Field,Vector,Current,confused
+1734403770000,S004,Ampere Law,Integration,Curl,gotit
+1734403835000,S002,Gauss Law,Electric Field,Symmetry,gotit
+1734403900000,S007,Divergence,Vector,Volume,gotit
+1734403965000,S005,Coulomb Force,Charge,Electric Field,gotit
+1734404030000,S001,Flux,Surface,Integration,gotit
+1734404095000,S008,Magnetic Field,Ampere Law,Curl,gotit
+1734404160000,S003,Voltage,Electric Field,Potential,gotit
+1734404225000,S006,Gauss Law,Divergence,Vector,confused
+1734404290000,S004,Current,Magnetic Field,Ampere Law,gotit
+1734404355000,S002,Gradient,Potential,Voltage,gotit
+1734404420000,S007,Symmetry,Integration,Gauss Law,gotit
+1734404485000,S005,Electric Field,Charge,Coulomb Force,gotit
+1734404550000,S001,Curl,Vector,Magnetic Field,confused
+1734404615000,S008,Volume,Divergence,Gauss Law,confused
+1734404680000,S003,Flux,Electric Field,Surface,gotit
+1734404745000,S006,Ampere Law,Magnetic Field,Integration,confused
+1734404810000,S004,Potential,Voltage,Gradient,confused
+1734404875000,S002,Gauss Law,Electric Field,Divergence,confused
+1734404940000,S007,Charge,Coulomb Force,Vector,gotit
+1734405005000,S005,Magnetic Field,Curl,Ampere Law,confused
+1734405070000,S001,Integration,Symmetry,Flux,confused
+1734405135000,S008,Electric Field,Potential,Voltage,confused

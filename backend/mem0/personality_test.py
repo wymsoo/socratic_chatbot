@@ -206,24 +206,7 @@ def ask_deepseek(system_prompt: str, user_input: str):
 
 # --- EXECUTION ---
 if __name__ == "__main__":
-    # 1. Collect responses interactively
-    # responses = run_quiz()
 
-    # # 2. Convert to formatted prompt string
-    # llm_payload_prompt = json.dumps(responses, indent=2)["summary"]
-
-    # # 3. Output results
-    # print("\n" + "=" * 60)
-    # print(" QUIZ COMPLETED! DATA READY FOR LLM API")
-    # print("=" * 60 + "\n")
-
-    # # Display JSON payload stored in backend
-    # print("--- 1. Raw Response Object (Save to DB) ---")
-    # print(json.dumps(responses, indent=2))
-
-    # # Display prompt ready to send to API (OpenAI/Anthropic/Gemini)
-    # print("\n--- 2. Formatted String Prompt for Summarization LLM ---")
-    # print(llm_payload_prompt)
     dummy = """
     {
     "q1_hobbies": "shopping",

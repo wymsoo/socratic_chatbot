@@ -18,9 +18,9 @@ class MemoryUI:
         # Initialize Memory with ollama configuration
         self.config = {
             "llm": {
-                "provider": "ollama",
+                "provider": "gemini",
                 "config": {
-                    "model": "llama3.1",
+                    "model": "gemini-embedding-001",
                     "temperature": 0,
                     "max_tokens": 2000,
                     "ollama_base_url": "http://localhost:11434",

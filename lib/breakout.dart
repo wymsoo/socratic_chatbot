@@ -6,23 +6,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 const String sampleLectureSnippet = """
-The primary goal of statistical thermodynamics (also known as equilibrium statistical mechanics) is to derive the classical thermodynamics of materials in terms of the properties of their constituent particles and the interactions between them. In other words, statistical thermodynamics provides a connection between the macroscopic properties of materials in thermodynamic equilibrium, and the microscopic behaviours and motions occurring inside the material.
-
-Whereas statistical mechanics proper involves dynamics, here the attention is focused on statistical equilibrium (steady state). Statistical equilibrium does not mean that the particles have stopped moving (mechanical equilibrium), rather, only that the ensemble is not evolving.
-
-Fundamental postulate
-A sufficient (but not necessary) condition for statistical equilibrium with an isolated system is that the probability distribution is a function only of conserved properties (total energy, total particle numbers, etc.). There are many different equilibrium ensembles that can be considered, and only some of them correspond to thermodynamics. Additional postulates are necessary to motivate why the ensemble for a given system should have one form or another.
-
-A common approach found in many textbooks is to take the equal a priori probability postulate. This postulate states that
-
-For an isolated system with an exactly known energy and exactly known composition, the system can be found with equal probability in any microstate consistent with that knowledge.
-The equal a priori probability postulate therefore provides a motivation for the microcanonical ensemble described below. There are various arguments in favour of the equal a priori probability postulate:
-
-Ergodic hypothesis: An ergodic system is one that evolves over time to explore "all accessible" states: all those with the same energy and composition. In an ergodic system, the microcanonical ensemble is the only possible equilibrium ensemble with fixed energy. This approach has limited applicability, since most systems are not ergodic.
-Principle of indifference: In the absence of any further information, we can only assign equal probabilities to each compatible situation.
-Maximum information entropy: A more elaborate version of the principle of indifference states that the correct ensemble is the ensemble that is compatible with the known information and that has the largest Gibbs entropy (information entropy).
-Other fundamental postulates for statistical mechanics have also been proposed.
-""";
+​In this lecture, I'm going to teach you how to ​implement embedding and cosine similarity ​into our application with the help of which ​we will be working on ​this particular JSON file that is a new file, ​which I have created, which has question, ​and answer along with it. ​We are going to process on this using Reg. ​In Reg, you remember we had three pillars, ​so embedding is one of those. ​We are going to implement embedding and cosine ​similarity to implement it up. ​For doing that, if you just check it ​here on the Internet in any browser, ​I'm just looking for Gemini embedding API. ​Now, the first link that I get, ​I will open it up, ​and what do I get here? ​I get the complete documentation about embedding. 
+​In this, you can simply ​check for JavaScript. What do we have to do? ​We can simply use here ai.models.embeddedContent. ​Now, in the embedded content, ​we just have to pass the model name and ​the content within which you can simply ​pass the string or you can also ​pass an array of string in this manner. ​Both is possible, so we're going to ​implement it up into our application along with that. ​You also need to understand how to implement ​cosine similarity into our application, ​which is also given here. This is just an example. """;
 
 void main() {
   runApp(const SocraticTutorApp());
