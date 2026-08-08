@@ -26,4 +26,9 @@
 - change the 'backend_url' in lib/breakout.dart according to your own device address
 - **Reference for memories** https://mem0.ai/blog/self-host-mem0-docker 
 
+# RAG for question generation
+- StashTag-Demo now has a new schema called 'dse_questions'
+- this is added as a vector database (refer to MongoDB Atlas)
+- Run generate_questions.js (tied to rag_store.js) to test out the function
+
 
