@@ -1,9 +1,9 @@
-require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const MemoryUI = require('./gemini_mem').MemoryUI;
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const PROMPT_TEMPLATES_DIR = path.join(__dirname, '..', 'prompt_templates');
 const PROMPT_FILES = {

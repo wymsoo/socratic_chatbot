@@ -3,8 +3,9 @@ const mem0 = require("mem0ai/oss");
 Memory = mem0.Memory;
 
 const dotenv = require("dotenv");
+const path = require('path');
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 class MemoryUI {
     constructor(agentId, userId = "default_user") {

@@ -1,0 +1,128 @@
+[
+  {
+    "question": "For a conductor in electrostatic equilibrium with surface charge density σ, why is the electric field just outside E = σ/ε0, not 0?",
+    "answers": [
+      { "id": "a1", "text": "Because charges rearrange so the internal field cancels, leaving surface field σ/ε0", "isCorrect": true },
+      { "id": "a2", "text": "Because of magnetic effects at the surface", "isCorrect": false },
+      { "id": "a3", "text": "Because Gauss's law does not apply to conductors", "isCorrect": false }
+    ],
+    "correct_explanation": "Surface charges produce a discontinuity in the normal component of E; applying Gauss's law across a pillbox gives E = σ/ε0 just outside.",
+    "topics": ["Electrostatic Equilibrium", "Electric Fields"],
+    "responses": { "correct": 42, "incorrect": 8, "answered_students": ["64b8f0a3f1d2e0001a1b2c3d", "64b8f0a3f1d2e0001a1b2c3e"] },
+    "published": true,
+    "lecture": "5f9d88c9b7e6a4000b1a2c3d",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c3e",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c3f",
+      "majorTopicIndex": 0,
+      "subTopicIndex": 1
+    },
+    "generationStatus": "success",
+    "errorMessage": ""
+  },
+  {
+    "question": "Why does Gauss's Law become applicable for an infinite charged rod but not a finite one?",
+    "answers": [
+      { "id": "a1", "text": "Because of symmetry — an infinite rod has translational invariance making Gaussian surfaces simple", "isCorrect": true },
+      { "id": "a2", "text": "Because finite rods have no charge", "isCorrect": false },
+      { "id": "a3", "text": "Because the electric constant changes with distance", "isCorrect": false }
+    ],
+    "correct_explanation": "Gauss's law always holds, but symmetric shapes let you infer the field easily; an infinite rod's symmetry yields a constant radial field used with a cylindrical Gaussian surface.",
+    "topics": ["Gauss's Law", "Symmetry"],
+    "responses": { "correct": 30, "incorrect": 15, "answered_students": ["64b8f0a3f1d2e0001a1b2c40"] },
+    "published": true,
+    "lecture": "5f9d88c9b7e6a4000b1a2c40",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c41",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c42",
+      "majorTopicIndex": 1,
+      "subTopicIndex": 0
+    },
+    "generationStatus": "success",
+    "errorMessage": ""
+  },
+  {
+    "question": "Explain how to apply Gauss's Law to find the field of a uniformly charged sphere.",
+    "answers": [
+      { "id": "a1", "text": "Inside the sphere field scales linearly with r; outside it behaves like a point charge", "isCorrect": true },
+      { "id": "a2", "text": "Field is zero everywhere", "isCorrect": false },
+      { "id": "a3", "text": "Field depends on angular position only", "isCorrect": false }
+    ],
+    "correct_explanation": "Use spherical symmetry; inside use enclosed charge proportional to r^3 leading to E ∝ r, outside enclosed charge is total Q giving E = Q/(4πε0 r^2).",
+    "topics": ["Gauss's Law", "Spherical Symmetry"],
+    "responses": { "correct": 25, "incorrect": 7, "answered_students": [] },
+    "published": true,
+    "lecture": "5f9d88c9b7e6a4000b1a2c43",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c44",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c45",
+      "majorTopicIndex": 1,
+      "subTopicIndex": 1
+    },
+    "generationStatus": "success",
+    "errorMessage": ""
+  },
+  {
+    "question": "What is the direction of the electric field just outside a charged conductor?",
+    "answers": [
+      { "id": "a1", "text": "Normal to the surface pointing outward for positive surface charge", "isCorrect": true },
+      { "id": "a2", "text": "Tangent to the surface", "isCorrect": false },
+      { "id": "a3", "text": "Always zero", "isCorrect": false }
+    ],
+    "correct_explanation": "Charges reside on the surface and only the normal component survives at the boundary; fields parallel would produce currents which are absent at static equilibrium.",
+    "topics": ["Electrostatics", "Boundary Conditions"],
+    "responses": { "correct": 18, "incorrect": 2, "answered_students": ["64b8f0a3f1d2e0001a1b2c50"] },
+    "published": true,
+    "lecture": "5f9d88c9b7e6a4000b1a2c46",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c47",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c48",
+      "majorTopicIndex": 0,
+      "subTopicIndex": 2
+    },
+    "generationStatus": "success",
+    "errorMessage": ""
+  },
+  {
+    "question": "A Gaussian surface encloses no net charge — what can you say about the electric flux through it?",
+    "answers": [
+      { "id": "a1", "text": "Net electric flux is zero", "isCorrect": true },
+      { "id": "a2", "text": "Flux must be positive", "isCorrect": false },
+      { "id": "a3", "text": "Flux is infinite", "isCorrect": false }
+    ],
+    "correct_explanation": "Gauss's law states net flux = enclosed charge/ε0; if enclosed charge is zero net flux is zero, though local field may be nonzero.",
+    "topics": ["Gauss's Law"],
+    "responses": { "correct": 50, "incorrect": 5, "answered_students": [] },
+    "published": true,
+    "lecture": "5f9d88c9b7e6a4000b1a2c49",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c4a",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c4b",
+      "majorTopicIndex": 2,
+      "subTopicIndex": 0
+    },
+    "generationStatus": "success",
+    "errorMessage": ""
+  },
+  {
+    "question": "Which of the following is a necessary condition for electrostatic equilibrium in conductors?",
+    "answers": [
+      { "id": "a1", "text": "No net motion of charges (zero current)", "isCorrect": true },
+      { "id": "a2", "text": "Uniform charge distribution always", "isCorrect": false },
+      { "id": "a3", "text": "Magnetic field is zero", "isCorrect": false }
+    ],
+    "correct_explanation": "Electrostatic equilibrium implies charges are at rest and therefore no tangential electric field exists on conductor surfaces; distribution may vary with shape.",
+    "topics": ["Electrostatics", "Conductors"],
+    "responses": { "correct": 33, "incorrect": 6, "answered_students": ["64b8f0a3f1d2e0001a1b2c60"] },
+    "published": false,
+    "lecture": "5f9d88c9b7e6a4000b1a2c4c",
+    "source": {
+      "lectureReview": "5f9d88c9b7e6a4000b1a2c4d",
+      "subTopicId": "5f9d88c9b7e6a4000b1a2c4e",
+      "majorTopicIndex": 0,
+      "subTopicIndex": 3
+    },
+    "generationStatus": "pending",
+    "errorMessage": ""
+  }
+]

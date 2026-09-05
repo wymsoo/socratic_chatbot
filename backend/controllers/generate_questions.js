@@ -5,6 +5,7 @@ const { RagStore } = require('./rag_store');
 const mongoose = require('mongoose');
 const json_path = `../ragdata/syllabus_rag/dse_questions_sample.json`
 const dotenv = require("dotenv");
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 const memory_ui = new gemini_mem_controller.MemoryUI('chat_history_agent', 'default_user');
 const ragStore = new RagStore('dse_questions');
@@ -74,7 +75,6 @@ JSON Schema:
 
 async function askGeminiFlashSummary(prompt, content, model) {
     try {
-        console.log(process.env.AIML_API_KEY)
         const response = await fetch('https://api.aimlapi.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -226,8 +226,7 @@ async function generateAssignment() {
 
 
 async function main() {
-    dburi = process.env.MONGODB_URI
-    dotenv.config();
+    const dburi = process.env.MONGODB_URI;
 
     try {
         await mongoose.connect(dburi);

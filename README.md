@@ -1,34 +1,98 @@
-# Steps
-- start docker
-- test memory containers by running memory_ui.py (note there are two, run the one in folder mem0)
-- run node app.js
-- run flutter app
-- Click breakout room block to try out chatbot
+# StashTag Demo
 
-# Details
-## testing the memory containers before running the app
-- go to folder 'controllers'
-- Start the memory UI (inspect and edit memories) to test whether memory is running properly
-  `node test_mem_db.py`
-- Check for connection status. If connected, select 2: see all memories. You will see the memories currently stored. 
-- You can select number 1 and try to add your own memories.
-- if its working, it should also work in the flutter application
+StashTag Demo is a Flutter learning application backed by a Node.js API. It includes lecture chat, quizzes, assignments, question generation, learner profiles, and Mem0-backed memory services.
 
-## to try out the chatbot
-- run node app.js (ignore server1.py)
-- run app by `flutter run` on a separate terminal
-- go to lib 'breakout.dart' to change a testing 'lecture transcript/snippet' as an input
-- one you click the home page's 'Breakout rooms' it will directly start processing the lecture transcript and the session starts
+## Repository Layout
 
-**Notes for Memory**
-- a `mem0` memory backend is expected and may raise connection errors if services are not running. To run services, start docker by `docker compose up -d`.
-- Make sure status shows "connected".
-- change the 'backend_url' in lib/breakout.dart according to your own device address
-- **Reference for memories** https://mem0.ai/blog/self-host-mem0-docker 
+This workspace contains one Git repository with several project areas:
 
-# RAG for question generation
-- StashTag-Demo now has a new schema called 'dse_questions'
-- this is added as a vector database (refer to MongoDB Atlas)
-- Run generate_questions.js (tied to rag_store.js) to test out the function
+- `lib/`: Flutter application screens and learning flows.
+- `assets/`: app images, data, and other bundled resources.
+- `backend/`: Express API, prompt templates, question data, RAG code, and Mem0 integration.
+- `backend/mem0-deploy/`: Docker Compose stack for Mem0, PostgreSQL/pgvector, and Neo4j.
+- `backend/mem0/`: Python utilities for memory and RAG experiments.
+- `cli/`: separate Dart command-line package.
+- `test/`: Flutter widget tests.
+- `android/`, `ios/`, `linux/`, `macos/`, `web/`, `windows/`: Flutter platform projects.
 
+`cli/` is a nested Dart package, not a separate Git repository.
 
+## Requirements
+
+- Flutter and Dart SDK compatible with Dart `3.12.2`.
+- Node.js with npm.
+- Docker Desktop for the Mem0 services.
+- A MongoDB Atlas connection for RAG question retrieval.
+- API credentials for the providers used by the selected backend features.
+
+## Secrets and Environment
+
+Backend secrets belong in `backend/.env`, which is ignored by Git. Start from [`backend/.env.example`](backend/.env.example):
+
+```sh
+cp backend/.env.example backend/.env
+```
+
+Fill only the variables needed for the feature you are running. The backend loads this file by path, so commands work whether they are launched from the repository root or from `backend/controllers/`.
+
+## Run the Flutter App
+
+From the repository root:
+
+```sh
+flutter pub get
+flutter run
+```
+
+For a physical device, update the backend address used by the relevant Flutter screen from `localhost` to the host machine's LAN address.
+
+Run Flutter checks with:
+
+```sh
+flutter analyze
+flutter test
+```
+
+## Run the Node Backend
+
+Install the Node dependencies defined by the root `package.json`, then start the API:
+
+```sh
+npm install
+node backend/app.js
+```
+
+The API listens on port `8000` by default. Set `PORT` in `backend/.env` to change it. Main routes include `/chat`, `/memory`, `/memory/search`, `/api/quiz`, `/api/questions`, and `/api/assignments`.
+
+Question generation can be run directly after configuring `AIML_API_KEY` and `MONGODB_URI`:
+
+```sh
+node backend/controllers/generate_questions.js
+```
+
+## Run Mem0 Services
+
+Start the self-hosted memory dependencies from the deployment directory:
+
+```sh
+cd backend/mem0-deploy
+docker compose up -d
+```
+
+The stack exposes Mem0 on `localhost:8888`, PostgreSQL/pgvector on port `8432`, Neo4j Browser on port `8474`, and Neo4j Bolt on port `8687`. Inspect service output with `docker compose logs -f` and stop it with `docker compose down`.
+
+## Run the Dart CLI
+
+```sh
+cd cli
+dart pub get
+dart run
+dart test
+```
+
+## Development Notes
+
+- `lib/breakout.dart` contains the lecture transcript and backend URL used by the breakout-room flow.
+- `backend/prompt_templates/` contains the prompts used by chat, grading, summaries, and question generation.
+- `backend/ragdata/` contains quiz and teaching RAG data.
+- The generated `build/`, `.dart_tool/`, `node_modules/`, and platform build artifacts should remain uncommitted.

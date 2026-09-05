@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'breakout.dart';
 import 'data.dart';
 import 'profile.dart';
+import 'assignments.dart';
 
 void main() {
   runApp(const MyApp());
@@ -126,7 +127,14 @@ class HomePage extends StatelessWidget {
                           title: 'Assignments',
                           color: const Color(0xFFB7D7F2),
                           imageUrl: AssignmentsUrl,
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AssignmentsPage(),
+                              ),
+                            );
+                          },
                         ),
                         _buildTile(
                           context,

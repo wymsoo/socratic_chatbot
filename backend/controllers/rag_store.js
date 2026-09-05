@@ -3,7 +3,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const dotenv = require('dotenv');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 class RagStore {
     constructor(collectionName = 'dse_questions', options = {}) {
